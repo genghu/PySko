@@ -1,0 +1,71 @@
+* {
+    padding: 0;
+    margin: 0;
+
+    font-family: Verdana, Arial, sans-serif;
+    font-size:12px;
+
+    list-style-type: none;
+}
+
+table {
+    background-color: #ccf;
+    padding: 20px;
+}
+
+.table_head {
+    background-color: #00f;
+    padding: 2px;
+    text-align: center;
+    color: #ccc;
+    font-size: 16px;
+}
+
+.col_head {
+    font-size: 16px;
+}
+
+.data td {
+    padding-right: 20px;
+}
+
+.data td a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #000;
+}
+
+.data td a:hover {
+    text-decoration: underline;
+}
+
+.indent {
+    padding-left: 10px;
+}
+
+#creatorsList li, #ownersList li, #collaboratorsList li, #viewersList li {
+    padding-left: 25px;
+}
+
+#skoDetails {
+    margin-left:25px;
+}
+
+.list_head {
+    font-weight: bold;
+}
+
+#detailsList {
+    float: left;
+    margin-right: 20px;
+}
+
+#usersList {
+    float: left;
+    background-color: #ccf;
+    padding: 20px;
+}
+
+.clear {
+    clear: both;
+}

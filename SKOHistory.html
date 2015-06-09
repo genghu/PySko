@@ -1,0 +1,31 @@
+<html>
+<head>
+    <title>History for {{ title }}</title>
+    <link rel="stylesheet" href="/static/styles.css" type="text/css"/>
+</head>
+<body>
+<center>
+    <table>
+        <tr><td colspan="4" class="table_head">History for {{ title }}</td></tr>
+        <tr>
+            <td class="col_head">Title</td>
+            <td class="col_head">Timestamp</td>
+            <td class="col_head">Author</td>
+        </tr>
+        {% for h in history %}
+            <tr class="data">
+                <td>{{ h['title'] }}</td>
+                <td>{{ h['updatedDate'] }}</td>
+                <td>{{ h['updatedBy'] }}</td>
+                <td>
+                    <a href="/changeDefaultHistory?skoGuid={{ skoGuid }}&historyGuid={{ h['historyGuid'] }}">Revert</a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">{{ h['notes'] }}</td>
+            </tr>
+        {% end %}
+    </table>
+</center>
+</body>
+</html>
