@@ -1,3 +1,0 @@
-# PySko
-
-SKO Python
