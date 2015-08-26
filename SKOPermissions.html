@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Details for {{ skoDetails['title'] }}</title>
+    <link rel="stylesheet" href="/static/styles.css" type="text/css"/>
+</head>
+<body>
+<center>
+<table>
+<tr>
+<td>
+    <div id="detailsList" align="left">
+        <b>S.K.O. Details</b><br/>
+        <div id="skoDetails">
+            <b>Title:</b>{{ skoDetails['title'] }}<br/>
+            <b>Created By:</b>{{ skoDetails['created_by'] }}<br/>
+            <b>Last Updated:</b>{{ skoDetails['last_updated'] }}<br/>
+            <b>Last Updated By:</b>{{ skoDetails['updated_by'] }}<br/>
+            <b>Notes:</b>{{ skoDetails['notes'] }}
+        </div>
+    </div>
+</td>
+<tr>
+<td><hr/>
+    <div id="usersList" align="left">
+        <div class="list_head">Creators</div>
+        <ul id="creatorsList">
+            {% for p in created %}
+                <li>
+                    {{ p['email'] }}
+                </li>
+            {% end %}
+        </ul>
+        <div class="list_head">Owners</div>
+        <ul id="ownersList">
+            {% for p in owned %}
+                <li>
+                    <select class="lbxChangePermssion">
+                        <option value="4" selected>Owner</option>
+                        <option value="2">Collaborator</option>
+                        <option value="1">Viewer</option>
+                    </select>
+                    <input type="button" value="Delete" class="deletePermission"/>
+                    <span class="email">{{ p['email'] }}</span>
+                </li>
+            {% end %}
+        </ul>
+        <div class="list_head">Collaborators</div>
+        <ul id="collaboratorsList">
+            {% for p in collaborated %}
+                <li>
+                    <select class="lbxChangePermssion">
+                        <option value="4">Owner</option>
+                        <option value="2" selected>Collaborator</option>
+                        <option value="1">Viewer</option>
+                    </select>
+                    <input type="button" value="Delete" class="deletePermission"/>
+                    <span class="email">{{ p['email'] }}</span>
+                </li>
+            {% end %}
+        </ul>
+        <div class="list_head">Viewers</div>
+        <ul id="viewersList">
+            {% for p in viewable %}
+                <li>
+                    <select class="lbxChangePermssion">
+                        <option value="4">Owner</option>
+                        <option value="2">Collaborator</option>
+                        <option value="1" selected>Viewer</option>
+                    </select>
+                    <input type="button" value="Delete" class="deletePermission"/>
+                    <span class="email">{{ p['email'] }}</span>
+                </li>
+            {% end %}
+        </ul>
+    </div>
+</td>
+<tr>
+<td><hr/>
+    <div class="clear">&nbsp;</div>
+    <div>Add users with a space between each email:</div>
+    <textarea id="users" rows="5" cols="55"></textarea><br/>
+    <select id="permissionLevel">
+        <option value="4" selected>Owner</option>
+        <option value="2">Collaborator</option>
+        <option value="1">Viewer</option>
+    </select>
+    <input type="checkbox" id="chkSendEmail"/> Send Email Invite
+    <input type="button" id="btnAddUsers" value="Add Users"/>
+</td>
+</tr>
+</table>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+    <script>
+        var userGuid = "{{ skoDetails['userGuid'] }}";
+        var skoGuid = "{{ skoDetails['skoGuid'] }}";
+        var nickname = "{{ skoDetails['nickname'] }}";
+
+        function ownersListBox() {
+            var select = $("<select>").addClass("lbxChangePermssion");
+            var owner = $("<option>").attr("value", "4").attr("selected", "selected").html("Owner");
+            var collaborator = $("<option>").attr("value", "2").html("Collaborator");
+            var viewer = $("<option>").attr("value", "1").html("Viewer");
+
+            $(select).append(owner);
+            $(select).append(collaborator);
+            $(select).append(viewer);
+
+            $(select).change(changePermission);
+
+            return select;
+        }
+
+        function collaboratorsListBox() {
+            var select = $("<select>").addClass("lbxChangePermssion");
+            var owner = $("<option>").attr("value", "4").html("Owner");
+            var collaborator = $("<option>").attr("value", "2").attr("selected", "selected").html("Collaborator");
+            var viewer = $("<option>").attr("value", "1").html("Viewer");
+
+            $(select).append(owner);
+            $(select).append(collaborator);
+            $(select).append(viewer);
+
+            $(select).change(changePermission);
+
+            return select;
+        }
+
+        function viewersListBox() {
+            var select = $("<select>").addClass("lbxChangePermssion");
+            var owner = $("<option>").attr("value", "4").html("Owner");
+            var collaborator = $("<option>").attr("value", "2").html("Collaborator");
+            var viewer = $("<option>").attr("value", "1").attr("selected", "selected").html("Viewer");
+
+            $(select).append(owner);
+            $(select).append(collaborator);
+            $(select).append(viewer);
+
+            $(select).change(changePermission);
+
+            return select;
+        }
+
+        function parseLevel(id) {
+            if (id == "ownersList") {
+                return 4;
+            } else if (id == "collaboratorsList") {
+                return 2;
+            } else {
+                return 1;
+            }
+        }
+
+        function changePermission() {
+            var levelAfterTag = $(this).find("option:selected")[0];
+            var levelAfter = $(levelAfterTag).attr("value");
+            var levelBefore = parseLevel($(this).parent().parent().attr("id"));
+            var email = $(this).parent();
+            var elementToRemove = $(this).parent();
+            var updatePerm = $.ajax({
+                type: "POST",
+                url: "/updatePermissions",
+                data: {
+                        levelBefore: levelBefore,
+                        levelAfter: levelAfter,
+                        skoGuid: skoGuid,
+                        email: $(email).find(".email").html()
+                    }
+            });
+            updatePerm.done(function(data) {
+                var updated = eval("(" + data + ")");
+                $(elementToRemove).remove();
+                addNewUser(updated['email'], updated['level']);
+            });
+        }
+
+        function addNewUser(user, level) {
+            var deleteLink = $("<input>").attr({"type":"button", "value":"Delete"});
+            deleteLink.click(deletePermission);
+            switch(level) {
+                case 4:
+                    var span = $("<span>").addClass("email").html(user);
+                    $("#ownersList").append($("<li>").append(ownersListBox()).append(deleteLink).append(span));
+                    break;
+                case 2:
+                    var span = $("<span>").addClass("email").html(user);
+                    $("#collaboratorsList").append($("<li>").append(collaboratorsListBox()).append(deleteLink).append(span));
+                    break;
+                case 1:
+                    var span = $("<span>").addClass("email").html(user);
+                    $("#viewersList").append($("<li>").append(viewersListBox()).append(deleteLink).append(span));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function deletePermission() {
+            var elementToRemove = $(this).parent();
+            var email = $(this).parent();
+            var deletePerm = $.ajax({
+                type: "POST",
+                url: "/deletePermissions",
+                data: {
+                    skoGuid: skoGuid,
+                    email: $(email).find(".email").html()
+                }
+            });
+            deletePerm.done(function(data) {
+                var deleted = eval("(" + data + ")");
+                $(elementToRemove).remove(); 
+            });
+        }
+
+        $(function() {
+            $(".lbxChangePermssion").change(changePermission);
+            $(".deletePermission").click(deletePermission);
+
+            $("#btnAddUsers").click(function(){
+                var permissionLevel = parseInt($("#permissionLevel option:selected").val());
+                var emails = $("#users").val();
+                var addPerm = $.ajax({
+                    type: "POST",
+                    url: "/addPermissions",
+                    data: {
+                        userGuid: userGuid,
+                        skoGuid: skoGuid,
+                        permissionLevel: permissionLevel,
+                        emails: emails,
+                        sendEmail: $("#chkSendEmail").attr("checked") ? true : false
+                    },
+                    
+                });
+                addPerm.done(function(data) {
+                    var added = eval("(" + data + ")");
+                    var users = added["success"];
+                    for (var i = 0; i < users.length; i++) {
+                        addNewUser(users[i], permissionLevel);
+                    }
+                    $("#users").val("");
+                });
+            }); 
+        });
+    </script>
+</body>
+</html>
