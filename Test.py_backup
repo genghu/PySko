@@ -23,7 +23,7 @@ class Main(tornado.web.RequestHandler):
 	def make_auth_url(self):
 		CLIENT_ID = "rfszuzHlfUaa5D5n4cLGUwLMV8mWn7HAii1VuxBI" # Fill this in with your client ID
 		CLIENT_SECRET = "IPuZtbSq4dge35W5hjTvO5B7I5EKvpdjDDKM5Fvo" # Fill this in with your client secret
-		REDIRECT_URI = "http://tokyo.x-in-y.com:8889/test_callback"
+		REDIRECT_URI = "http://ccnu.x-in-y.com:8889/test_callback"
  
 		state = str(uuid4())
     		self.state = state
@@ -33,7 +33,7 @@ class Main(tornado.web.RequestHandler):
               			"redirect_uri": REDIRECT_URI,
               			"duration": "temporary",
               			"scope": "identity"}
-    		url = "http://tokyo.x-in-y.com:3000/oauth/authorize?" + urllib.urlencode(params)
+    		url = "http://ccnu.x-in-y.com:3000/oauth/authorize?" + urllib.urlencode(params)
     		return url,state
   	
 class Callback(tornado.web.RequestHandler):
@@ -59,13 +59,13 @@ class Callback(tornado.web.RequestHandler):
 	def get_token(code):
 		CLIENT_ID = "rfszuzHlfUaa5D5n4cLGUwLMV8mWn7HAii1VuxBI" # Fill this in with your client ID
 		CLIENT_SECRET = "IPuZtbSq4dge35W5hjTvO5B7I5EKvpdjDDKM5Fvo" # Fill this in with your client secret
-		REDIRECT_URI = "http://tokyo.x-in-y.com:8889/test_callback"
+		REDIRECT_URI = "http://ccnu.x-in-y.com:8889/test_callback"
     		client_auth = requests.auth.HTTPBasicAuth(CLIENT_ID, CLIENT_SECRET)
     		post_data = {"grant_type": "authorization_code",
                  "code": code,
                  "redirect_uri": REDIRECT_URI}
     		headers = base_headers()
-    		response = requests.post("http://tokyo.x-in-y.com:3000/oauth/access_token",
+    		response = requests.post("http://ccnu.x-in-y.com:3000/oauth/access_token",
                              auth=client_auth,
                              headers=headers,
                              data=post_data)

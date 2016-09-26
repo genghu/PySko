@@ -5,7 +5,7 @@ class RootHandler(tornado.web.RequestHandler):
     @tornado.web.authenticated
     def get(self):
         if self.is_authenticated():
-            self.redirect("http://www.skoonline.org/s-k-o/tokyoserver") 
+            self.redirect("http://www.skoonline.org/s-k-o/ccnuserver") 
             login_name = tornado.escape.xhtml_escape(self.current_user["email"])
             self.write(login_name)
         else:

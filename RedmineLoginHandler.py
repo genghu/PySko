@@ -14,7 +14,7 @@ import urlparse
 import oauth2 as oauth
 import pprint
 
-REDIRECT_URI = "http://tokyo.x-in-y.com:8889/redmineCallback"
+REDIRECT_URI = "http://ccnu.x-in-y.com:8889/redmineCallback"
 
 # Create your consumer with the proper key/secret.
 consumer_key="rfszuzHlfUaa5D5n4cLGUwLMV8mWn7HAii1VuxBI" 
@@ -23,13 +23,13 @@ consumer_secret="IPuZtbSq4dge35W5hjTvO5B7I5EKvpdjDDKM5Fvo"
 consumer = oauth.Consumer(consumer_key, consumer_secret)
 
 # Request token URL for Twitter.
-request_token_url = "http://tokyo.x-in-y.com:3000/oauth/request_token"
-access_token_url = 'http://tokyo.x-in-y.com:3000/oauth/access_token'
-authorize_url = 'http://tokyo.x-in-y.com:3000/oauth/authorize'
-userinfo_url = 'http://tokyo.x-in-y.com:3000/oauth/user_info'
-currentuser_url = 'http://tokyo.x-in-y.com:3000/oauth/current_user'
-test_url = 'http://tokyo.x-in-y.com:3000/oauth/test_url'
-uloggedin_url = 'http://tokyo.x-in-y.com:3000/oauth/user_logged_in'
+request_token_url = "http://ccnu.x-in-y.com:3000/oauth/request_token"
+access_token_url = 'http://ccnu.x-in-y.com:3000/oauth/access_token'
+authorize_url = 'http://ccnu.x-in-y.com:3000/oauth/authorize'
+userinfo_url = 'http://ccnu.x-in-y.com:3000/oauth/user_info'
+currentuser_url = 'http://ccnu.x-in-y.com:3000/oauth/current_user'
+test_url = 'http://ccnu.x-in-y.com:3000/oauth/test_url'
+uloggedin_url = 'http://ccnu.x-in-y.com:3000/oauth/user_logged_in'
 
 
 #class Main(tornado.web.RequestHandler):
@@ -44,7 +44,7 @@ class Main(sessionhandler.SessionBaseHandler):
 			self.nextUrl = self.get_argument("nextUrl")
 		else:
 			self.nextUrl = "http://www.auto-tutor.com/1024768/general/author.html"
-	    		#self.nextUrl = 'http://tokyo.x-in-y.com:8889/list_skos' 
+	    		#self.nextUrl = 'http://ccnu.x-in-y.com:8889/list_skos' 
 		#check if we have access_token, otherwise we need to have one thru redmine oauth	
 		if 'access_token' in self.session and self.session['access_token']:
 			self.redirect(self.get_argument("next", self.nextUrl))

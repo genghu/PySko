@@ -5,7 +5,7 @@ import urlparse
 import oauth2 as oauth
 import pprint
 
-REDIRECT_URI = "http://tokyo.x-in-y.com:8889/redmineCallback"
+REDIRECT_URI = "http://ccnu.x-in-y.com:8889/redmineCallback"
 
 # Create your consumer with the proper key/secret.
 consumer_key="rfszuzHlfUaa5D5n4cLGUwLMV8mWn7HAii1VuxBI" 
@@ -14,13 +14,13 @@ consumer_secret="IPuZtbSq4dge35W5hjTvO5B7I5EKvpdjDDKM5Fvo"
 consumer = oauth.Consumer(consumer_key, consumer_secret)
 
 # Request token URL for Twitter.
-request_token_url = "http://tokyo.x-in-y.com:3000/oauth/request_token"
-access_token_url = 'http://tokyo.x-in-y.com:3000/oauth/access_token'
-authorize_url = 'http://tokyo.x-in-y.com:3000/oauth/authorize'
-userinfo_url = 'http://tokyo.x-in-y.com:3000/oauth/user_info'
-currentuser_url = 'http://tokyo.x-in-y.com:3000/oauth/current_user'
-test_url = 'http://tokyo.x-in-y.com:3000/oauth/test_url'
-uloggedin_url = 'http://tokyo.x-in-y.com:3000/oauth/user_logged_in'
+request_token_url = "http://ccnu.x-in-y.com:3000/oauth/request_token"
+access_token_url = 'http://ccnu.x-in-y.com:3000/oauth/access_token'
+authorize_url = 'http://ccnu.x-in-y.com:3000/oauth/authorize'
+userinfo_url = 'http://ccnu.x-in-y.com:3000/oauth/user_info'
+currentuser_url = 'http://ccnu.x-in-y.com:3000/oauth/current_user'
+test_url = 'http://ccnu.x-in-y.com:3000/oauth/test_url'
+uloggedin_url = 'http://ccnu.x-in-y.com:3000/oauth/user_logged_in'
 
 
 client1 = oauth.Client(consumer)

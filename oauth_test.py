@@ -3,15 +3,15 @@ import time
 import oauth.oauth as oauth
 
 # settings for the local test consumer
-SERVER = 'tokyo.x-in-y.com'
+SERVER = 'ccnu.x-in-y.com'
 PORT = 3000
 
 # fake urls for the test server (matches ones in server.py)
-REQUEST_TOKEN_URL = 'http://tokyo.x-in-y.com:3000/oauth/request_token'
-ACCESS_TOKEN_URL = 'http://tokyo.x-in-y.com:3000/oauth/access_token'
-AUTHORIZATION_URL = 'http://tokyo.x-in-y.com:3000/oauth/authorize'
-CALLBACK_URL = 'http://tokyo.x-in-y.com:8889/test_callback'
-RESOURCE_URL = 'http://tokyo.x-in-y.com:8889/oauth/user_info'
+REQUEST_TOKEN_URL = 'http://ccnu.x-in-y.com:3000/oauth/request_token'
+ACCESS_TOKEN_URL = 'http://ccnu.x-in-y.com:3000/oauth/access_token'
+AUTHORIZATION_URL = 'http://ccnu.x-in-y.com:3000/oauth/authorize'
+CALLBACK_URL = 'http://ccnu.x-in-y.com:8889/test_callback'
+RESOURCE_URL = 'http://ccnu.x-in-y.com:8889/oauth/user_info'
 
 # key and secret granted by the service provider for this consumer application - same as the MockOAuthDataStore
 CONSUMER_KEY = "rfszuzHlfUaa5D5n4cLGUwLMV8mWn7HAii1VuxBI" # Fill this in with your client ID

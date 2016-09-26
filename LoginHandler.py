@@ -16,10 +16,10 @@ class LoginHandler(tornado.web.RequestHandler, tornado.auth.GoogleOAuth2Mixin):
 		if self.get_argument("nextUrl", None):
 			self.nextUrl = self.get_argument("nextUrl")
 		else:
-			self.nextUrl = "http://www.skoonline.org/s-k-o/tokyoserver"
+			self.nextUrl = "http://www.skoonline.org/s-k-o/ccnuserver"
 
 		if self.get_argument('code', False):
-			user = yield self.get_authenticated_user(redirect_uri='http://tokyo.x-in-y.com:8889/oauth2callback', code=self.get_argument('code'))
+			user = yield self.get_authenticated_user(redirect_uri='http://ccnu.x-in-y.com:8889/oauth2callback', code=self.get_argument('code'))
             # Save the user with e.g. set_secure_cookie
 			if not user:
 				raise tornado.web.HTTPError(500, "Google auth failed")
@@ -35,7 +35,7 @@ class LoginHandler(tornado.web.RequestHandler, tornado.auth.GoogleOAuth2Mixin):
 			self.create_guid(user)
 			self.redirect(self.get_argument("next", self.nextUrl))
 		else:
-			yield self.authorize_redirect( redirect_uri='http://tokyo.x-in-y.com:8889/oauth2callback', client_id=self.settings['google_oauth']['key'], scope=['email'], response_type='code', extra_params={'approval_prompt': 'auto'})
+			yield self.authorize_redirect( redirect_uri='http://ccnu.x-in-y.com:8889/oauth2callback', client_id=self.settings['google_oauth']['key'], scope=['email'], response_type='code', extra_params={'approval_prompt': 'auto'})
 
 	def create_guid(self, user):
 		email = str(user["email"])

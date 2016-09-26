@@ -1,5 +1,6 @@
 import tornado.web
 import tornado.escape
+import tornado.httpclient 
 
 import uuid
 import datetime
@@ -80,7 +81,13 @@ class CreateSKO(tornado.web.RequestHandler):
             self.mostRecentGuid = guid
 
             self.db.skos.update({'guid': guid}, scriptObject)
-    
+   
+
+	    # do update in the backup as well
+            # the last parameter is 1, which means this is from update request 
+	    # default is 0, no update
+            self.doBackup(scriptObject,1)
+ 
     def createWithGUID(self, jsonObject):
         guid =  jsonObject['guid']
 	scriptObject = {}
@@ -135,6 +142,37 @@ class CreateSKO(tornado.web.RequestHandler):
                 'inTrash':0
             }, upsert=True)
         self.db.skos.insert(scriptObject)
+
+	# do the backup now 
+        self.doBackup(scriptObject)
+
+    def doBackup(self, scriptObject,update=0): 
+	#now save a copy as backup, guid and lastUpdatedBy hardcoded 
+        http_client = tornado.httpclient.HTTPClient()
+        #scriptObject['guid'] = '6a78c27d-73e3-4e08-bc2f-a0ff39fd7dc1'
+        scriptObject['createdBy'] = 'xiangenhu@gmail.com'
+        scriptObject['lastUpdatedBy'] = 'xiangenhu@gmail.com'
+        scriptObject['backupreq'] = 1
+        scriptObject['update'] = update
+        scriptObject['source'] = 'authoringtool'
+
+        nso = scriptObject
+        nso['timestamp']= str(nso['timestamp'])
+        nso['_id']= str(nso['_id'])
+        print '>>>>>>',nso
+        body=urllib.urlencode({"json":tornado.escape.json_encode(nso)})
+        #body=urllib.urlencode({"json":scriptObject})
+        #print '>>>>>>>>>',body
+	try:
+		#headers = {'Content-Type': 'application/json; charset=UTF-8'}
+		headers = None  
+		req = tornado.httpclient.HTTPRequest("http://backup.skoonline.org/create",method="POST",body=body,headers=headers)
+    		response = http_client.fetch(req)
+    		print response.body
+	except tornado.httpclient.HTTPError as e:
+    		print("Error: " + str(e))
+	except Exception as e:
+    		print("Error: " + str(e))
 
     def addScriptHistory(self, scriptObject):
         history = {}

@@ -19,12 +19,12 @@ class LoginHandler(tornado.web.RequestHandler):
 		if self.get_argument("nextUrl", None):
 			self.nextUrl = self.get_argument("nextUrl")
 		else:
-			self.nextUrl = "http://tokyo.x-in-y.com:8889/myScripts.jsp"
+			self.nextUrl = "http://ccnu.x-in-y.com:8889/myScripts.jsp"
 		
 		user = self.get_argument('user')
 		passd = self.get_argument('pass')
 		try:
-			redmine_user = Redmine('http://tokyo.x-in-y.com:3000/', username=user, password=passd).auth()
+			redmine_user = Redmine('http://ccnu.x-in-y.com:3000/', username=user, password=passd).auth()
 			self.set_secure_cookie("user", tornado.escape.json_encode({'email': user+'@x-in-y.org'}))
 			self.create_guid(user)
 			self.redirect(self.get_argument("next", self.nextUrl))
@@ -36,7 +36,7 @@ class LoginHandler(tornado.web.RequestHandler):
 		if self.get_argument("nextUrl", None):
 			self.nextUrl = self.get_argument("nextUrl")
 		else:
-			self.nextUrl = "http://tokyo.x-in-y.com:3000/"
+			self.nextUrl = "http://ccnu.x-in-y.com:3000/"
 		if self.get_secure_cookie("user"):
 			self.redirect(self.get_argument("next", self.nextUrl))
 		else:

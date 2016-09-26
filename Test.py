@@ -14,7 +14,7 @@ import urlparse
 import oauth2 as oauth
 import pprint
 
-REDIRECT_URI = "http://tokyo.x-in-y.com:8889/test_callback"
+REDIRECT_URI = "http://ccnu.x-in-y.com:8889/test_callback"
 
 # Create your consumer with the proper key/secret.
 consumer_key="rfszuzHlfUaa5D5n4cLGUwLMV8mWn7HAii1VuxBI" 
@@ -23,12 +23,12 @@ consumer_secret="IPuZtbSq4dge35W5hjTvO5B7I5EKvpdjDDKM5Fvo"
 consumer = oauth.Consumer(consumer_key, consumer_secret)
 
 # Request token URL for Twitter.
-request_token_url = "http://tokyo.x-in-y.com:3000/oauth/request_token"
-access_token_url = 'http://tokyo.x-in-y.com:3000/oauth/access_token'
-authorize_url = 'http://tokyo.x-in-y.com:3000/oauth/authorize'
-userinfo_url = 'http://tokyo.x-in-y.com:3000/oauth/user_info'
-currentuser_url = 'http://tokyo.x-in-y.com:3000/oauth/current_user'
-test_url = 'http://tokyo.x-in-y.com:3000/oauth/test_url'
+request_token_url = "http://ccnu.x-in-y.com:3000/oauth/request_token"
+access_token_url = 'http://ccnu.x-in-y.com:3000/oauth/access_token'
+authorize_url = 'http://ccnu.x-in-y.com:3000/oauth/authorize'
+userinfo_url = 'http://ccnu.x-in-y.com:3000/oauth/user_info'
+currentuser_url = 'http://ccnu.x-in-y.com:3000/oauth/current_user'
+test_url = 'http://ccnu.x-in-y.com:3000/oauth/test_url'
 
 
 #class Main(tornado.web.RequestHandler):
@@ -42,7 +42,7 @@ class Main(sessionhandler.SessionBaseHandler):
 		if self.get_argument("nextUrl", None):
 			self.nextUrl = self.get_argument("nextUrl")
 		else:
-			self.nextUrl = "http://www.skoonline.org/s-k-o/tokyoserver"
+			self.nextUrl = "http://www.skoonline.org/s-k-o/ccnuserver"
 		#check if we have access_token, otherwise we need to have one thru redmine oauth	
 		if 'access_token' in self.session and self.session['access_token']:
 			self.redirect(self.get_argument("next", self.nextUrl))
@@ -72,7 +72,7 @@ class Callback(sessionhandler.SessionBaseHandler):
 		if self.get_argument("nextUrl", None):
 			self.nextUrl = self.get_argument("nextUrl")
 		else:
-			self.nextUrl = "http://www.skoonline.org/s-k-o/tokyoserver"
+			self.nextUrl = "http://www.skoonline.org/s-k-o/ccnuserver"
 		
 		request_token = self.session['request_token']
 
