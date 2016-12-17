@@ -76,7 +76,7 @@ class CreateSKO(tornado.web.RequestHandler):
 
             self.addScriptHistory(scriptObject)
 
-            scriptObject['scriptContent'] = None
+            #scriptObject['scriptContent'] = None
 
             self.mostRecentGuid = guid
 
@@ -129,7 +129,7 @@ class CreateSKO(tornado.web.RequestHandler):
         scriptObject = self.jsonObjectToSKOScript(jsonObject)
         self.addScriptHistory(scriptObject)
 
-        scriptObject['scriptContent'] = None
+        #scriptObject['scriptContent'] = None
         if jsonObject['source'].lower() == 'authoringtool':
             self.db.permissions.update({
                 'nickname': scriptObject['createdBy'],
@@ -150,6 +150,7 @@ class CreateSKO(tornado.web.RequestHandler):
 	#now save a copy as backup, guid and lastUpdatedBy hardcoded 
         http_client = tornado.httpclient.HTTPClient()
         #scriptObject['guid'] = '6a78c27d-73e3-4e08-bc2f-a0ff39fd7dc1'
+        scriptObject['title'] += '- Created by '+scriptObject['createdBy'] 
         scriptObject['createdBy'] = 'xiangenhu@gmail.com'
         scriptObject['lastUpdatedBy'] = 'xiangenhu@gmail.com'
         scriptObject['backupreq'] = 1
@@ -159,7 +160,7 @@ class CreateSKO(tornado.web.RequestHandler):
         nso = scriptObject
         nso['timestamp']= str(nso['timestamp'])
         nso['_id']= str(nso['_id'])
-        print '>>>>>>',nso
+        #print '>>>>>>',nso
         body=urllib.urlencode({"json":tornado.escape.json_encode(nso)})
         #body=urllib.urlencode({"json":scriptObject})
         #print '>>>>>>>>>',body
