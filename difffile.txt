@@ -1,0 +1,1284 @@
+diff --git a/ATLServerService.py b/ATLServerService.py
+index 3f4fa70..b0d2562 100644
+--- a/ATLServerService.py
++++ b/ATLServerService.py
+@@ -44,4 +44,4 @@ def ctrlHandler(ctrlType):
+ 
+ if __name__ == '__main__':
+     win32api.SetConsoleCtrlHandler(ctrlHandler, True)
+-    win32serviceutil.HandleCommandLine(ATLServerService)
+\ No newline at end of file
++    win32serviceutil.HandleCommandLine(ATLServerService)
+diff --git a/ATLite.pyc b/ATLite.pyc
+index 5bc1a50..5c56db9 100644
+Binary files a/ATLite.pyc and b/ATLite.pyc differ
+diff --git a/ATLiteApplication.py b/ATLiteApplication.py
+index 519b252..17d2377 100644
+--- a/ATLiteApplication.py
++++ b/ATLiteApplication.py
+@@ -6,10 +6,11 @@ import base64
+ 
+ import pymongo
+ import pymongo.errors
++from pymongo import MongoClient
+ 
+ import RootHandler
+ import LoginHandler
+-import GIFTLoginHandler
++#import GIFTLoginHandler
+ import CreateSKO
+ import RetrieveSKO
+ import UpdateSKO
+@@ -37,7 +38,7 @@ import RetrieveServlet
+ import PermissionServlet
+ import SKOLogServiceWrapper
+ import CrossDomainXMLHandler
+-import RetrieveAccountWrapper
++import Retri1eveAccountWrapper
+ import TrashSKO
+ import AdminScripts
+ import SKOAdmin
+@@ -51,7 +52,9 @@ import RedmineLoginHandler
+ class ATLiteApplication(tornado.web.Application):
+     def __init__(self):
+         try:
+-            self.connection = pymongo.connection.Connection()
++            #self.connection = pymongo.connection.Connection()
++	    self.client = MongoClient()
++	    self.db = client.dsspp
+         except pymongo.errors.AutoReconnect:
+ #            self.logfile = open('C:/atlapp.log', 'a')
+ #            print >> self.logfile, '*** atldsspp says: Error! Could not connect to MongoDB!'
+@@ -89,8 +92,9 @@ class ATLiteApplication(tornado.web.Application):
+             (r"/ssasd", SSASD.SSASD),
+             (r"/getaccount", RetrieveGUID.RetrieveGuid),
+             (r"/googleLogin", LoginHandler.LoginHandler),
+-            (r"/realLogin", GIFTLoginHandler.LoginHandler),
+-            (r"/redmineLogin", GIFTLoginHandler.LoginHandler),
++            (r"/realLogin", LoginHandler.LoginHandler),
++            #(r"/realLogin", GIFTLoginHandler.LoginHandler),
++            #(r"/redmineLogin", GIFTLoginHandler.LoginHandler),
+             (r"/oauth2callback", LoginHandler.LoginHandler),
+             (r"/skolog", SKOLogServiceWrapper.SKOLogServiceWrapper),
+             (r"/retrieveRecord", SKOLogServiceWrapper.SKOLogServiceWrapper),
+diff --git a/ATLiteApplication.pyc b/ATLiteApplication.pyc
+index 1937263..b685e4e 100644
+Binary files a/ATLiteApplication.pyc and b/ATLiteApplication.pyc differ
+diff --git a/ATLiteApplication.py~ b/ATLiteApplication.py~
+index 07b5ae2..17d2377 100644
+--- a/ATLiteApplication.py~
++++ b/ATLiteApplication.py~
+@@ -6,10 +6,11 @@ import base64
+ 
+ import pymongo
+ import pymongo.errors
++from pymongo import MongoClient
+ 
+ import RootHandler
+ import LoginHandler
+-import GIFTLoginHandler
++#import GIFTLoginHandler
+ import CreateSKO
+ import RetrieveSKO
+ import UpdateSKO
+@@ -37,7 +38,7 @@ import RetrieveServlet
+ import PermissionServlet
+ import SKOLogServiceWrapper
+ import CrossDomainXMLHandler
+-import RetrieveAccountWrapper
++import Retri1eveAccountWrapper
+ import TrashSKO
+ import AdminScripts
+ import SKOAdmin
+@@ -46,13 +47,14 @@ import SaveBookmark
+ import RetrieveBookmarks
+ #import MyScriptsServlet
+ 
+-#import RedmineLoginHandler
++import RedmineLoginHandler
+ 
+ class ATLiteApplication(tornado.web.Application):
+     def __init__(self):
+         try:
+-            self.connection = pymongo.MongoClient("localhost",27017)
+-	    #self.connection = pymongo.connection.Connection()
++            #self.connection = pymongo.connection.Connection()
++	    self.client = MongoClient()
++	    self.db = client.dsspp
+         except pymongo.errors.AutoReconnect:
+ #            self.logfile = open('C:/atlapp.log', 'a')
+ #            print >> self.logfile, '*** atldsspp says: Error! Could not connect to MongoDB!'
+@@ -90,6 +92,7 @@ class ATLiteApplication(tornado.web.Application):
+             (r"/ssasd", SSASD.SSASD),
+             (r"/getaccount", RetrieveGUID.RetrieveGuid),
+             (r"/googleLogin", LoginHandler.LoginHandler),
++            (r"/realLogin", LoginHandler.LoginHandler),
+             #(r"/realLogin", GIFTLoginHandler.LoginHandler),
+             #(r"/redmineLogin", GIFTLoginHandler.LoginHandler),
+             (r"/oauth2callback", LoginHandler.LoginHandler),
+@@ -103,9 +106,9 @@ class ATLiteApplication(tornado.web.Application):
+             (r"/savebookmark", SaveBookmark.SaveBookmark),
+             (r"/retrievebookmark", RetrieveBookmarks.RetrieveBookmarks),
+ 		
+-            #(r"/redmineLogin2", RedmineLoginHandler.Main),
++            (r"/redmineLogin2", RedmineLoginHandler.Main),
+            # (r"/realLogin", RedmineLoginHandler.Main),
+-            #(r"/redmineCallback", RedmineLoginHandler.Callback)
++            (r"/redmineCallback", RedmineLoginHandler.Callback)
+ 
+ 
+         ];
+diff --git a/ATLiteExceptions.pyc b/ATLiteExceptions.pyc
+index c4878c5..b3cdc38 100644
+Binary files a/ATLiteExceptions.pyc and b/ATLiteExceptions.pyc differ
+diff --git a/AddPermissions.pyc b/AddPermissions.pyc
+index 021ebd4..3683d14 100644
+Binary files a/AddPermissions.pyc and b/AddPermissions.pyc differ
+diff --git a/AdminScripts.pyc b/AdminScripts.pyc
+index 749c673..512739d 100644
+Binary files a/AdminScripts.pyc and b/AdminScripts.pyc differ
+diff --git a/Base.py b/Base.py
+index bd54483..bbf9fdd 100644
+--- a/Base.py
++++ b/Base.py
+@@ -4,6 +4,8 @@ import re
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import WorkerBee
+ 
+ class Base():
+@@ -42,8 +44,11 @@ class Base():
+         self.notes = notes
+         self.rankby = rankby
+ 
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.dsspp
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.dsspp
++
++	self.client = MongoClient()
++	self.db = client.dsspp
+ 
+     def getText(self):
+         remove_non_alphanum = re.compile('[^A-Za-z0-9\\s]+')
+diff --git a/Base.pyc b/Base.pyc
+index 0deea5b..a3a6a0c 100644
+Binary files a/Base.pyc and b/Base.pyc differ
+diff --git a/BaseWrapper.py b/BaseWrapper.py
+index a354120..e87392e 100644
+--- a/BaseWrapper.py
++++ b/BaseWrapper.py
+@@ -3,6 +3,8 @@ import tornado.escape
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import Base
+ 
+ from ATLiteExceptions import *
+@@ -11,8 +13,10 @@ class BaseWrapper(tornado.web.RequestHandler):
+     def initialize(self):
+         self.json = None
+ 
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def get(self):
+         self.handle_request()
+@@ -126,4 +130,4 @@ class BaseWrapper(tornado.web.RequestHandler):
+         except JSONPropertyMissingError, e:
+             self.write(tornado.escape.json_encode({'error':e.message}))
+         except InvalidUserError:
+-            self.write(tornado.escape.json_encode({'error':'invalid user guid'}))
+\ No newline at end of file
++            self.write(tornado.escape.json_encode({'error':'invalid user guid'}))
+diff --git a/BaseWrapper.pyc b/BaseWrapper.pyc
+index 2ba6e9e..73a40cb 100644
+Binary files a/BaseWrapper.pyc and b/BaseWrapper.pyc differ
+diff --git a/ChangeDefaultHistory.py b/ChangeDefaultHistory.py
+index 448e2a8..0596c13 100644
+--- a/ChangeDefaultHistory.py
++++ b/ChangeDefaultHistory.py
+@@ -3,13 +3,17 @@ import tornado.escape
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import uuid
+ import datetime
+ 
+ class ChangeDefaultHistory(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def get(self):
+         skoGuid = self.get_argument('skoGuid')
+@@ -30,4 +34,4 @@ class ChangeDefaultHistory(tornado.web.RequestHandler):
+ 
+         self.db.history.remove({'guid':skoGuid, 'historyGuid':historyGuid })
+ 
+-        self.redirect('/permissions?sko_id=%s' % (skoGuid))
+\ No newline at end of file
++        self.redirect('/permissions?sko_id=%s' % (skoGuid))
+diff --git a/ChangeDefaultHistory.pyc b/ChangeDefaultHistory.pyc
+index f050a31..967c5c8 100644
+Binary files a/ChangeDefaultHistory.pyc and b/ChangeDefaultHistory.pyc differ
+diff --git a/CheckPermission.py b/CheckPermission.py
+index 7276627..8527823 100644
+--- a/CheckPermission.py
++++ b/CheckPermission.py
+@@ -5,10 +5,14 @@ from ATLiteExceptions import *
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ class CheckPermission(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def get(self):
+         self.handle_request()
+@@ -66,4 +70,4 @@ class CheckPermission(tornado.web.RequestHandler):
+             try:
+                 check = props[p]
+             except KeyError:
+-                raise JSONPropertyMissingError('property %s not found' % (p))
+\ No newline at end of file
++                raise JSONPropertyMissingError('property %s not found' % (p))
+diff --git a/CheckPermission.pyc b/CheckPermission.pyc
+index fc52955..c96ca2e 100644
+Binary files a/CheckPermission.pyc and b/CheckPermission.pyc differ
+diff --git a/CompareText.py b/CompareText.py
+index f6e3653..385d88c 100644
+--- a/CompareText.py
++++ b/CompareText.py
+@@ -2,7 +2,7 @@ import tornado.web
+ import tornado.escape
+ 
+ import pymongo
+-
++from pymongo import MongoClient
+ import Base
+ 
+ 
+@@ -15,8 +15,10 @@ import datetime
+ 
+ class CompareText(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.dsspp
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.dsspp
++	self.client = MongoClient()
++	self.db = client.dsspp
+ 
+         self.jsonObject = None
+     
+diff --git a/CompareText.pyc b/CompareText.pyc
+index 0e8a037..4bd7ee3 100644
+Binary files a/CompareText.pyc and b/CompareText.pyc differ
+diff --git a/CreateSKO.py b/CreateSKO.py
+index 306e0e7..e6d4117 100644
+--- a/CreateSKO.py
++++ b/CreateSKO.py
+@@ -6,6 +6,7 @@ import datetime
+ import urllib
+ 
+ import pymongo
++from pymongo import MongoClient
+ 
+ from ATLiteExceptions import *
+ 
+@@ -13,8 +14,10 @@ from PermissionManager import PermissionManager
+ 
+ class CreateSKO(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+         self.mostRecentGuid = ''
+         self.pm = PermissionManager()
+ 
+diff --git a/CreateSKO.pyc b/CreateSKO.pyc
+index af64c0e..dde90a0 100644
+Binary files a/CreateSKO.pyc and b/CreateSKO.pyc differ
+diff --git a/CrossDomainXMLHandler.py b/CrossDomainXMLHandler.py
+index 235e7e0..4d9bb1c 100644
+--- a/CrossDomainXMLHandler.py
++++ b/CrossDomainXMLHandler.py
+@@ -8,4 +8,4 @@ class CrossDomain(tornado.web.RequestHandler):
+ 		self.handle_request()
+ 
+ 	def handle_request(self):
+-		self.write('<cross-domain-policy><allow-access-from domain="*"/></cross-domain-policy>')
+\ No newline at end of file
++		self.write('<cross-domain-policy><allow-access-from domain="*"/></cross-domain-policy>')
+diff --git a/CrossDomainXMLHandler.pyc b/CrossDomainXMLHandler.pyc
+index 80c091a..d8dc5b8 100644
+Binary files a/CrossDomainXMLHandler.pyc and b/CrossDomainXMLHandler.pyc differ
+diff --git a/DeletePermissions.py b/DeletePermissions.py
+index e5f6109..65a90a3 100644
+--- a/DeletePermissions.py
++++ b/DeletePermissions.py
+@@ -2,11 +2,14 @@ import tornado.web
+ import tornado.escape
+ 
+ import pymongo
++from pymongo import MongoClient
+ 
+ class DeletePermissions(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def post(self):
+         skoGuid = self.get_argument('skoGuid', None)
+@@ -17,4 +20,4 @@ class DeletePermissions(tornado.web.RequestHandler):
+ 
+         self.db.permissions.remove({'guid': skoGuid, 'nickname': email})
+ 
+-        self.write(tornado.escape.json_encode({'success':'empty'}))
+\ No newline at end of file
++        self.write(tornado.escape.json_encode({'success':'empty'}))
+diff --git a/DeletePermissions.pyc b/DeletePermissions.pyc
+index 45f0f77..f62b37d 100644
+Binary files a/DeletePermissions.pyc and b/DeletePermissions.pyc differ
+diff --git a/DeleteSKOByAdmin.py b/DeleteSKOByAdmin.py
+index 7100bad..adc6357 100644
+--- a/DeleteSKOByAdmin.py
++++ b/DeleteSKOByAdmin.py
+@@ -5,8 +5,10 @@ import pymongo
+ 
+ class DeleteSKOByAdmin(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def get(self):
+ 
+@@ -32,4 +34,4 @@ class DeleteSKOByAdmin(tornado.web.RequestHandler):
+ 
+             self.write( "{\"complete\":\"complete\"}")
+ 
+-            
+\ No newline at end of file
++            
+diff --git a/DeleteSKOByAdmin.pyc b/DeleteSKOByAdmin.pyc
+index 88cd5bd..bb4c17d 100644
+Binary files a/DeleteSKOByAdmin.pyc and b/DeleteSKOByAdmin.pyc differ
+diff --git a/DomainList.py b/DomainList.py
+index e3fc7ca..47df6e6 100644
+--- a/DomainList.py
++++ b/DomainList.py
+@@ -1,11 +1,14 @@
+ import tornado.web
+ import pymongo
++from pymongo import MongoClient
+ 
+ class DomainList(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.dsspp
+-
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.dsspp
++	self.client = MongoClient()
++	self.db = client.dsspp
++	
+     def get(self):
+         rows = self.db.domain_list.find({}, sort=[("number", pymongo.ASCENDING)])
+ 
+@@ -14,4 +17,4 @@ class DomainList(tornado.web.RequestHandler):
+             xml += '<domain value="%s" label="%s"/>' % (row['label'], row['title'])
+         xml += '</domains>'
+ 
+-        self.write(xml)
+\ No newline at end of file
++        self.write(xml)
+diff --git a/DomainList.pyc b/DomainList.pyc
+index 291b0c9..331ece9 100644
+Binary files a/DomainList.pyc and b/DomainList.pyc differ
+diff --git a/EMailer.py b/EMailer.py
+index 42771f2..1b512b0 100644
+--- a/EMailer.py
++++ b/EMailer.py
+@@ -9,8 +9,10 @@ from ATLiteExceptions import *
+ 
+ class EMailer(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+         self.required_properties = ['userGuid', 'message', 'subject', 'to_addrs']
+ 
+     def get(self):
+@@ -59,4 +61,4 @@ class EMailer(tornado.web.RequestHandler):
+             try:
+                 check = props[p]
+             except KeyError:
+-                raise JSONPropertyMissingError('property %s not found' % (p))
+\ No newline at end of file
++                raise JSONPropertyMissingError('property %s not found' % (p))
+diff --git a/EMailer.pyc b/EMailer.pyc
+index 3e0ceda..453fb65 100644
+Binary files a/EMailer.pyc and b/EMailer.pyc differ
+diff --git a/EmailTester.py b/EmailTester.py
+index cf3cdc8..417d99c 100644
+--- a/EmailTester.py
++++ b/EmailTester.py
+@@ -23,4 +23,4 @@ class EmailTester(tornado.web.RequestHandler):
+         self.finish()
+ 
+     def on_response(self, response):
+-        pass
+\ No newline at end of file
++        pass
+diff --git a/EmailTester.pyc b/EmailTester.pyc
+index 5a52e9d..c1c4aba 100644
+Binary files a/EmailTester.pyc and b/EmailTester.pyc differ
+diff --git a/GIFTLoginHandler.py b/GIFTLoginHandler.py
+index 2d99c86..5897edb 100644
+--- a/GIFTLoginHandler.py
++++ b/GIFTLoginHandler.py
+@@ -4,6 +4,7 @@ import tornado.escape
+ import json
+ 
+ import pymongo
++from pymongo import MongoClient
+ import uuid
+ import tornado.template 
+ from redmine import Redmine
+@@ -44,8 +45,10 @@ class LoginHandler(tornado.web.RequestHandler):
+ 	
+ 	def create_guid(self, user):
+ 		email = user+'@x-in-y.com' # dummy email 
+-		connection = pymongo.connection.Connection()
+-		atlitepy = connection.atlitepy
++		#connection = pymongo.connection.Connection()
++		#atlitepy = connection.atlitepy
++		client = MongoClient()
++		atlitepy = client.atlitepy
+ 		users = atlitepy.users
+ 
+ 		exists = users.find({"email":email})
+diff --git a/GIFTLoginHandler.pyc b/GIFTLoginHandler.pyc
+index 0b8323c..f840601 100644
+Binary files a/GIFTLoginHandler.pyc and b/GIFTLoginHandler.pyc differ
+diff --git a/GIFTLoginHandler.py~ b/GIFTLoginHandler.py~
+index 2307b43..5897edb 100644
+--- a/GIFTLoginHandler.py~
++++ b/GIFTLoginHandler.py~
+@@ -4,10 +4,11 @@ import tornado.escape
+ import json
+ 
+ import pymongo
++from pymongo import MongoClient
+ import uuid
+ import tornado.template 
+-#from redmine import Redmine
+-#from redmine.exceptions import AuthError
++from redmine import Redmine
++from redmine.exceptions import AuthError
+ 
+ # route /redmine
+ class LoginHandler(tornado.web.RequestHandler):
+@@ -24,7 +25,7 @@ class LoginHandler(tornado.web.RequestHandler):
+ 		user = self.get_argument('user')
+ 		passd = self.get_argument('pass')
+ 		try:
+-			#redmine_user = Redmine('http://tokyo.x-in-y.com:3000/', username=user, password=passd).auth()
++			redmine_user = Redmine('http://tokyo.x-in-y.com:3000/', username=user, password=passd).auth()
+ 			self.set_secure_cookie("user", tornado.escape.json_encode({'email': user+'@x-in-y.org'}))
+ 			self.create_guid(user)
+ 			self.redirect(self.get_argument("next", self.nextUrl))
+@@ -40,12 +41,14 @@ class LoginHandler(tornado.web.RequestHandler):
+ 		if self.get_secure_cookie("user"):
+ 			self.redirect(self.get_argument("next", self.nextUrl))
+ 		else:
+-			#self.render('redminelogin.html')
++			self.render('redminelogin.html')
+ 	
+ 	def create_guid(self, user):
+ 		email = user+'@x-in-y.com' # dummy email 
+-		connection = pymongo.connection.Connection()
+-		atlitepy = connection.atlitepy
++		#connection = pymongo.connection.Connection()
++		#atlitepy = connection.atlitepy
++		client = MongoClient()
++		atlitepy = client.atlitepy
+ 		users = atlitepy.users
+ 
+ 		exists = users.find({"email":email})
+diff --git a/ListSKOs.py b/ListSKOs.py
+index adb8711..f38fc38 100644
+--- a/ListSKOs.py
++++ b/ListSKOs.py
+@@ -3,6 +3,7 @@ import tornado.web
+ import urllib
+ 
+ import pymongo
++from pymongo import MongoClient
+ 
+ import re
+ import json
+@@ -11,8 +12,10 @@ from ATLiteExceptions import *
+ 
+ class ListSKOs(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     @tornado.web.authenticated
+     def get(self):
+diff --git a/ListSKOs.pyc b/ListSKOs.pyc
+index 8498915..69db654 100644
+Binary files a/ListSKOs.pyc and b/ListSKOs.pyc differ
+diff --git a/LoginHandler.pyc b/LoginHandler.pyc
+index f8ec528..86dc71c 100644
+Binary files a/LoginHandler.pyc and b/LoginHandler.pyc differ
+diff --git a/LoginServlet.pyc b/LoginServlet.pyc
+index 8d75190..0d09145 100644
+Binary files a/LoginServlet.pyc and b/LoginServlet.pyc differ
+diff --git a/MyScriptsServlet.py b/MyScriptsServlet.py
+index 81b8ebd..ce72e04 100644
+--- a/MyScriptsServlet.py
++++ b/MyScriptsServlet.py
+@@ -2,13 +2,16 @@ import tornado.web
+ import tornado.escape
+ 
+ import pymongo
++from pymongo import MongoClient
+ 
+ from ATLiteExceptions import *
+ 
+ class MyScriptsServlet(tornado.web.RequestHandler):
+ 	def initialize(self):
+-		self.connection = pymongo.connection.Connection()
+-		self.db = self.connection.atlitepy
++		#self.connection = pymongo.connection.Connection()
++		#self.db = self.connection.atlitepy
++		self.client = MongoClient()
++		self.db = client.atlitepy
+ 
+ 	@tornado.web.authenticated
+ 	def post(self):
+@@ -29,4 +32,4 @@ class MyScriptsServlet(tornado.web.RequestHandler):
+ 		except InvalidSKOException:
+ 			self.write(tornado.escape.json_encode({}
+ 				'error': 'no skos found'
+-			}))
+\ No newline at end of file
++			}))
+diff --git a/PermissionManager.py b/PermissionManager.py
+index d65bc8b..6d12970 100644
+--- a/PermissionManager.py
++++ b/PermissionManager.py
+@@ -1,9 +1,12 @@
+ import pymongo
++from pymongo import MongoClient
+ 
+ class PermissionManager:
+     def __init__(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ #        self.logfile = open('C:/atl.log', 'a')
+ 
+     def checkPermission(self, nickname, guid, permission):
+diff --git a/PermissionManager.pyc b/PermissionManager.pyc
+index 23c7c74..fad3d71 100644
+Binary files a/PermissionManager.pyc and b/PermissionManager.pyc differ
+diff --git a/PermissionServlet.py b/PermissionServlet.py
+index 6debf49..0308a18 100644
+--- a/PermissionServlet.py
++++ b/PermissionServlet.py
+@@ -2,13 +2,16 @@ import tornado.web
+ import tornado.escape
+ 
+ import pymongo
++from pymongo import MongoClient 
+ 
+ from PermissionManager import PermissionManager
+ 
+ class PermissionServlet(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+         self.pm = PermissionManager()
+ 
+     @tornado.web.authenticated
+diff --git a/PermissionServlet.pyc b/PermissionServlet.pyc
+index 52a3618..60b3a75 100644
+Binary files a/PermissionServlet.pyc and b/PermissionServlet.pyc differ
+diff --git a/RedmineLoginHandler.pyc b/RedmineLoginHandler.pyc
+index 2b2276e..50fe5d3 100644
+Binary files a/RedmineLoginHandler.pyc and b/RedmineLoginHandler.pyc differ
+diff --git a/RetrieveAccount.py b/RetrieveAccount.py
+index 7a56a1f..19b5f19 100644
+--- a/RetrieveAccount.py
++++ b/RetrieveAccount.py
+@@ -1,4 +1,5 @@
+ import pymongo
++from pymongo import MongoClient
+ 
+ import datetime
+ import urllib
+@@ -14,8 +15,10 @@ class RetrieveAccount:
+         self.timestamp  = timestamp
+         self.profileID   = profileID#"HELLO PROFILE"
+         self.show_all = show_all
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def go(self):
+         if self.action == "create":
+@@ -62,4 +65,4 @@ class RetrieveAccount:
+         if self.show_all == "1":
+             return json.dumps(results)
+         else:
+-            return json.dumps(results[0])
+\ No newline at end of file
++            return json.dumps(results[0])
+diff --git a/RetrieveAccount.pyc b/RetrieveAccount.pyc
+index c3e1253..a99e629 100644
+Binary files a/RetrieveAccount.pyc and b/RetrieveAccount.pyc differ
+diff --git a/RetrieveAccountWrapper.pyc b/RetrieveAccountWrapper.pyc
+index a7a3b64..5e0f992 100644
+Binary files a/RetrieveAccountWrapper.pyc and b/RetrieveAccountWrapper.pyc differ
+diff --git a/RetrieveBookmarks.py b/RetrieveBookmarks.py
+index 4562d1d..a72cc15 100644
+--- a/RetrieveBookmarks.py
++++ b/RetrieveBookmarks.py
+@@ -3,6 +3,7 @@ import tornado.web
+ import urllib
+ 
+ import pymongo
++from pymongo import MongoClient
+ 
+ import json
+ import datetime
+@@ -13,8 +14,10 @@ from ATLiteExceptions import *
+ 
+ class RetrieveBookmarks(tornado.web.RequestHandler):
+ 	def initialize(self):
+-		self.connection = pymongo.connection.Connection()
+-		self.db = self.connection.atlitepy
++		#self.connection = pymongo.connection.Connection()
++		#self.db = self.connection.atlitepy
++		self.client = MongoClient()
++		self.db = client.atlitepy
+ 
+ 	def get(self):
+ 		json_str = self.get_argument('json', None)
+@@ -65,4 +68,4 @@ class RetrieveBookmarks(tornado.web.RequestHandler):
+ 		user = self.get_secure_cookie("user")
+ 		if not user:
+ 			return None
+-		return tornado.escape.json_decode(user)
+\ No newline at end of file
++		return tornado.escape.json_decode(user)
+diff --git a/RetrieveBookmarks.pyc b/RetrieveBookmarks.pyc
+index 5d92c10..31fb598 100644
+Binary files a/RetrieveBookmarks.pyc and b/RetrieveBookmarks.pyc differ
+diff --git a/RetrieveGUID.py b/RetrieveGUID.py
+index b62e835..d1fb179 100644
+--- a/RetrieveGUID.py
++++ b/RetrieveGUID.py
+@@ -2,11 +2,14 @@ import tornado.web
+ import tornado.escape
+ 
+ import pymongo
++from pymongo import MongoClient
+ 
+ class RetrieveGuid(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     @tornado.web.authenticated
+     def get(self):
+@@ -24,4 +27,4 @@ class RetrieveGuid(tornado.web.RequestHandler):
+         user = self.get_secure_cookie("user")
+         if not user:
+             return self.redirect("/realLogin?next=/getaccount")
+-        return tornado.escape.json_decode(user)
+\ No newline at end of file
++        return tornado.escape.json_decode(user)
+diff --git a/RetrieveGUID.pyc b/RetrieveGUID.pyc
+index 0549214..500f29a 100644
+Binary files a/RetrieveGUID.pyc and b/RetrieveGUID.pyc differ
+diff --git a/RetrieveSKO.py b/RetrieveSKO.py
+index 434163c..a0ed175 100644
+--- a/RetrieveSKO.py
++++ b/RetrieveSKO.py
+@@ -4,11 +4,14 @@ import tornado.escape
+ import urllib
+ 
+ import pymongo
++from pymongo import MongoClient
+ 
+ class RetrieveSKO(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def get(self):
+         self.handle_request()
+diff --git a/RetrieveSKO.pyc b/RetrieveSKO.pyc
+index 5930c1e..dc3ef00 100644
+Binary files a/RetrieveSKO.pyc and b/RetrieveSKO.pyc differ
+diff --git a/RetrieveServlet.py b/RetrieveServlet.py
+index 1b71f03..7f9bb56 100644
+--- a/RetrieveServlet.py
++++ b/RetrieveServlet.py
+@@ -3,6 +3,7 @@ import tornado.escape
+ import re
+ 
+ import pymongo
++from pymongo import MongoClient
+ 
+ from PermissionManager import PermissionManager
+ 
+@@ -13,8 +14,10 @@ import urllib
+ class RetrieveServlet(tornado.web.RequestHandler):
+     def initialize(self):
+         self.pm = PermissionManager()
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     #@tornado.web.authenticated
+     def get(self):
+diff --git a/RetrieveServlet.pyc b/RetrieveServlet.pyc
+index 1fbe855..dc80500 100644
+Binary files a/RetrieveServlet.pyc and b/RetrieveServlet.pyc differ
+diff --git a/RootHandler.pyc b/RootHandler.pyc
+index 48fc8b2..ca863cf 100644
+Binary files a/RootHandler.pyc and b/RootHandler.pyc differ
+diff --git a/SKOAdmin.py b/SKOAdmin.py
+index f1a5ccd..12c3e44 100644
+--- a/SKOAdmin.py
++++ b/SKOAdmin.py
+@@ -10,8 +10,10 @@ import time
+ 
+ class SKOAdmin(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def get(self):
+ 
+diff --git a/SKOAdmin.pyc b/SKOAdmin.pyc
+index 96a4744..b038713 100644
+Binary files a/SKOAdmin.pyc and b/SKOAdmin.pyc differ
+diff --git a/SKOHistory.py b/SKOHistory.py
+index c74311e..0debb83 100644
+--- a/SKOHistory.py
++++ b/SKOHistory.py
+@@ -8,8 +8,10 @@ import json
+ 
+ class SKOHistory(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def get(self):
+         skoGuid = self.get_argument('sko_id', None)
+diff --git a/SKOHistory.pyc b/SKOHistory.pyc
+index 93a993e..7718265 100644
+Binary files a/SKOHistory.pyc and b/SKOHistory.pyc differ
+diff --git a/SKOLogService.py b/SKOLogService.py
+index ca9be80..eecf772 100644
+--- a/SKOLogService.py
++++ b/SKOLogService.py
+@@ -1,5 +1,7 @@
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import datetime
+ import json
+ 
+@@ -11,8 +13,10 @@ class SKOLogService:
+         self.user = user
+         self.sid  = sid
+         self.srt   = srt
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.dsspp
+ 
+     def go(self):
+         if self.action == "create":
+@@ -70,4 +74,4 @@ class SKOLogService:
+             result["timestamp"] = str(result["timestamp"]) 
+         return json.dumps(results)
+         #return self.db.sko_logs.find_one({"user":"faisalbuet03@gmail.com"}) 
+-        #return  self.db.sko_logs.find(query).sort("timestamp", pymongo.DESCENDING).limit(1000)
+\ No newline at end of file
++        #return  self.db.sko_logs.find(query).sort("timestamp", pymongo.DESCENDING).limit(1000)
+diff --git a/SKOLogService.pyc b/SKOLogService.pyc
+index 50afaa5..a8b1dcd 100644
+Binary files a/SKOLogService.pyc and b/SKOLogService.pyc differ
+diff --git a/SKOLogServiceWrapper.pyc b/SKOLogServiceWrapper.pyc
+index c710ab0..19c2522 100644
+Binary files a/SKOLogServiceWrapper.pyc and b/SKOLogServiceWrapper.pyc differ
+diff --git a/SKOPermissions.py b/SKOPermissions.py
+index c34386e..cd0da0a 100644
+--- a/SKOPermissions.py
++++ b/SKOPermissions.py
+@@ -5,12 +5,16 @@ import urllib
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ from ATLiteExceptions import *
+ 
+ class SKOPermissions(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     @tornado.web.authenticated
+     def get(self):
+diff --git a/SKOPermissions.pyc b/SKOPermissions.pyc
+index 13bc911..5f9c133 100644
+Binary files a/SKOPermissions.pyc and b/SKOPermissions.pyc differ
+diff --git a/SSA.py b/SSA.py
+index 403bfea..c0d14d6 100644
+--- a/SSA.py
++++ b/SSA.py
+@@ -4,6 +4,8 @@ import re
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import WorkerBee
+ 
+ class SSA():
+@@ -17,8 +19,10 @@ class SSA():
+              _minRankby = 0.0, 
+              _wc = 0.0,
+              _category = 'general'):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.dsspp
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.dsspp
++	self.client = MongoClient()
++	self.db = client.dsspp
+ 
+         self.text = _text
+         self.domains = _domains
+diff --git a/SSA.pyc b/SSA.pyc
+index 3e9abfd..a2a5932 100644
+Binary files a/SSA.pyc and b/SSA.pyc differ
+diff --git a/SSAAll.py b/SSAAll.py
+index 3db59f7..585c3b1 100644
+--- a/SSAAll.py
++++ b/SSAAll.py
+@@ -2,14 +2,18 @@ import tornado.escape
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import SSA
+ 
+ import tornado.web
+ 
+ class SSAAll(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.dsspp
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.dsspp
++	self.client = MongoClient()
++	self.db = client.dsspp
+ 
+     def get(self):
+         self.query()
+diff --git a/SSAAll.pyc b/SSAAll.pyc
+index f7b1551..345c632 100644
+Binary files a/SSAAll.pyc and b/SSAAll.pyc differ
+diff --git a/SSASD.py b/SSASD.py
+index 6df5c82..5b71a2d 100644
+--- a/SSASD.py
++++ b/SSASD.py
+@@ -2,6 +2,8 @@ import tornado.escape
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import SSA
+ 
+ import tornado.web
+@@ -10,8 +12,10 @@ import math
+ 
+ class SSASD(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.dsspp
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.dsspp
++	self.client = MongoClient()
++	self.db = client.dsspp
+ 
+     def get(self):
+         self.query()
+diff --git a/SSASD.pyc b/SSASD.pyc
+index 25dc72d..d2b3453 100644
+Binary files a/SSASD.pyc and b/SSASD.pyc differ
+diff --git a/SSAWrapper.py b/SSAWrapper.py
+index 5783db2..520fd6c 100644
+--- a/SSAWrapper.py
++++ b/SSAWrapper.py
+@@ -3,14 +3,18 @@ import tornado.escape
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import SSA
+ 
+ from ATLiteExceptions import *
+ 
+ class SSAWrapper(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+         self.json = None
+ 
+diff --git a/SSAWrapper.pyc b/SSAWrapper.pyc
+index 36294a1..d03ea2c 100644
+Binary files a/SSAWrapper.pyc and b/SSAWrapper.pyc differ
+diff --git a/SaveBookmark.py b/SaveBookmark.py
+index b3c0fce..f487812 100644
+--- a/SaveBookmark.py
++++ b/SaveBookmark.py
+@@ -4,6 +4,8 @@ import urllib
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import json
+ import datetime
+ 
+@@ -14,8 +16,10 @@ from gmail import GMailPy
+ 
+ class SaveBookmark(tornado.web.RequestHandler):
+ 	def initialize(self):
+-		self.connection = pymongo.connection.Connection()
+-		self.db = self.connection.atlitepy
++		#self.connection = pymongo.connection.Connection()
++		#self.db = self.connection.atlitepy
++		self.client = MongoClient()
++		self.db = client.atlitepy
+ 
+ 	def get(self):
+ 		json_str = self.get_argument('json', None)
+diff --git a/SaveBookmark.pyc b/SaveBookmark.pyc
+index 12b9619..d2cd1fc 100644
+Binary files a/SaveBookmark.pyc and b/SaveBookmark.pyc differ
+diff --git a/SpaceList.pyc b/SpaceList.pyc
+index b4ce411..f7be01d 100644
+Binary files a/SpaceList.pyc and b/SpaceList.pyc differ
+diff --git a/Test.py b/Test.py
+index 6c50bef..eb0a8cd 100644
+--- a/Test.py
++++ b/Test.py
+@@ -7,6 +7,7 @@ import json
+ from torndsession import sessionhandler
+ 
+ import pymongo
++from pymongo import MongoClient
+ from uuid import uuid4
+ import tornado.template 
+ import urllib 
+diff --git a/TrashSKO.py b/TrashSKO.py
+index bb10f6d..b13affb 100644
+--- a/TrashSKO.py
++++ b/TrashSKO.py
+@@ -3,10 +3,14 @@ import tornado.escape
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ class TrashSKO(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def post(self):
+ 
+@@ -23,4 +27,4 @@ class TrashSKO(tornado.web.RequestHandler):
+                     if action == "restore":
+                         self.db.permissions.update({"_id":q['_id']}, {'$set':{"inTrash":0}}, True)
+ 
+-            
+\ No newline at end of file
++            
+diff --git a/TrashSKO.pyc b/TrashSKO.pyc
+index 5a31b01..eb16955 100644
+Binary files a/TrashSKO.pyc and b/TrashSKO.pyc differ
+diff --git a/UpdatePermissions.py b/UpdatePermissions.py
+index 0748c6b..1710076 100644
+--- a/UpdatePermissions.py
++++ b/UpdatePermissions.py
+@@ -2,11 +2,14 @@ import tornado.web
+ import tornado.escape
+ 
+ import pymongo
++from pymongo import MongoClient
+ 
+ class UpdatePermissions(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def post(self):
+         levelBefore = self.get_argument('levelBefore', None)
+@@ -34,4 +37,4 @@ class UpdatePermissions(tornado.web.RequestHandler):
+             'nickname': permission['nickname'],
+             'skoGuid': permission['guid'],
+             'email': email
+-        }))
+\ No newline at end of file
++        }))
+diff --git a/UpdatePermissions.pyc b/UpdatePermissions.pyc
+index 39bee6d..38da1ab 100644
+Binary files a/UpdatePermissions.pyc and b/UpdatePermissions.pyc differ
+diff --git a/UpdateSKO.py b/UpdateSKO.py
+index 8f108b2..e6e3764 100644
+--- a/UpdateSKO.py
++++ b/UpdateSKO.py
+@@ -4,13 +4,16 @@ import tornado.escape
+ from ATLiteExceptions import *
+ 
+ import pymongo
++from pymongo import MongoClient
+ import datetime
+ import uuid
+ 
+ class UpdateSKO(tornado.web.RequestHandler):
+     def initialize(self):
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+         self.updateable_properites = ['title', 'notes', 'scriptContent', 'published']
+ 
+     def get(self):
+@@ -89,4 +92,4 @@ class UpdateSKO(tornado.web.RequestHandler):
+             try:
+                 check = props[p]
+             except KeyError:
+-                raise JSONPropertyMissingError('property %s not found' % (p))
+\ No newline at end of file
++                raise JSONPropertyMissingError('property %s not found' % (p))
+diff --git a/UpdateSKO.pyc b/UpdateSKO.pyc
+index 471e08b..51a6055 100644
+Binary files a/UpdateSKO.pyc and b/UpdateSKO.pyc differ
+diff --git a/WorkerAnt.py b/WorkerAnt.py
+index f742518..3111faf 100644
+--- a/WorkerAnt.py
++++ b/WorkerAnt.py
+@@ -2,14 +2,18 @@
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import tornado.escape
+ 
+ class WorkerAnt():
+     def __init__(self, term, space):
+         self.term = term
+         self.space = space
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.dsspp
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.dsspp
++	self.client = MongoClient()
++	self.db = client.dsspp
+ 
+     def query(self):
+         row = self.db.lsaneighbors.find_one({
+diff --git a/WorkerAnt2.py b/WorkerAnt2.py
+index 95af5b7..e46d778 100644
+--- a/WorkerAnt2.py
++++ b/WorkerAnt2.py
+@@ -2,6 +2,8 @@
+ 
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import tornado.escape
+ 
+ class WorkerAnt():
+@@ -11,8 +13,10 @@ class WorkerAnt():
+ 
+         self.term = term
+         self.space = space
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.dsspp
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.dsspp
++	self.client = MongoClient()
++	self.db = client.dsspp
+ 
+     def query(self):
+         row = self.db.lsaneighbors.find_one({
+diff --git a/WorkerAnt2.pyc b/WorkerAnt2.pyc
+index 80bfc1a..a306a54 100644
+Binary files a/WorkerAnt2.pyc and b/WorkerAnt2.pyc differ
+diff --git a/WorkerBee.py b/WorkerBee.py
+index bbb90ac..14ca444 100644
+--- a/WorkerBee.py
++++ b/WorkerBee.py
+@@ -1,5 +1,7 @@
+ import pymongo
+ 
++from pymongo import MongoClient
++
+ import tornado.escape
+ 
+ import WorkerAnt2
+@@ -42,8 +44,10 @@ class WorkerBee():
+         self.space = space
+         self.domain = domain
+ 
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.dsspp
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.dsspp
++	self.client = MongoClient()
++	self.db = client.dsspp
+ 
+         # look for existing domain/space/term result in database
+         row = self.db.lsaneighbors.find_one({'word': self.term, 'space': self.space, 'domain': self.domain})
+diff --git a/WorkerBee.pyc b/WorkerBee.pyc
+index cf7d910..a734239 100644
+Binary files a/WorkerBee.pyc and b/WorkerBee.pyc differ
+diff --git a/gmail.py b/gmail.py
+index 9be7210..993048a 100644
+--- a/gmail.py
++++ b/gmail.py
+@@ -4,6 +4,7 @@ import uuid
+ import datetime
+ 
+ import pymongo
++from pymongo import MongoClient
+ 
+ GMAIL_USERNAME = 'SKOHuest'
+ GMAIL_PASSWORD = 'um-its-center'
+@@ -17,8 +18,10 @@ class GMailPy():
+         self.subject = ''
+         self.message = ''
+ 
+-        self.connection = pymongo.connection.Connection()
+-        self.db = self.connection.atlitepy
++        #self.connection = pymongo.connection.Connection()
++        #self.db = self.connection.atlitepy
++	self.client = MongoClient()
++	self.db = client.atlitepy
+ 
+     def add_to_addr(self, toaddr):
+         self.toaddrs.append(toaddr)
+diff --git a/gmail.pyc b/gmail.pyc
+index 66b1043..c8820b5 100644
+Binary files a/gmail.pyc and b/gmail.pyc differ

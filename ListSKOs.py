@@ -3,6 +3,7 @@ import tornado.web
 import urllib
 
 import pymongo
+from pymongo import MongoClient
 
 import re
 import json
@@ -11,8 +12,10 @@ from ATLiteExceptions import *
 
 class ListSKOs(tornado.web.RequestHandler):
     def initialize(self):
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.atlitepy
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.atlitepy
+	self.client = MongoClient()
+	self.db = client.atlitepy
 
     @tornado.web.authenticated
     def get(self):

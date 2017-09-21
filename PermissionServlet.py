@@ -2,13 +2,16 @@ import tornado.web
 import tornado.escape
 
 import pymongo
+from pymongo import MongoClient 
 
 from PermissionManager import PermissionManager
 
 class PermissionServlet(tornado.web.RequestHandler):
     def initialize(self):
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.atlitepy
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.atlitepy
+	self.client = MongoClient()
+	self.db = client.atlitepy
         self.pm = PermissionManager()
 
     @tornado.web.authenticated

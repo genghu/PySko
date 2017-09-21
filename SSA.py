@@ -4,6 +4,8 @@ import re
 
 import pymongo
 
+from pymongo import MongoClient
+
 import WorkerBee
 
 class SSA():
@@ -17,8 +19,10 @@ class SSA():
              _minRankby = 0.0, 
              _wc = 0.0,
              _category = 'general'):
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.dsspp
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.dsspp
+	self.client = MongoClient()
+	self.db = client.dsspp
 
         self.text = _text
         self.domains = _domains

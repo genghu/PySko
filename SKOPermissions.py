@@ -5,12 +5,16 @@ import urllib
 
 import pymongo
 
+from pymongo import MongoClient
+
 from ATLiteExceptions import *
 
 class SKOPermissions(tornado.web.RequestHandler):
     def initialize(self):
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.atlitepy
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.atlitepy
+	self.client = MongoClient()
+	self.db = client.atlitepy
 
     @tornado.web.authenticated
     def get(self):
