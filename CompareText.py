@@ -2,7 +2,7 @@ import tornado.web
 import tornado.escape
 
 import pymongo
-
+from pymongo import MongoClient
 import Base
 
 
@@ -15,8 +15,10 @@ import datetime
 
 class CompareText(tornado.web.RequestHandler):
     def initialize(self):
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.dsspp
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.dsspp
+	self.client = MongoClient()
+	self.db = client.dsspp
 
         self.jsonObject = None
     

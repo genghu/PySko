@@ -1,5 +1,7 @@
 import pymongo
 
+from pymongo import MongoClient
+
 import datetime
 import json
 
@@ -11,8 +13,10 @@ class SKOLogService:
         self.user = user
         self.sid  = sid
         self.srt   = srt
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.atlitepy
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.atlitepy
+	self.client = MongoClient()
+	self.db = client.dsspp
 
     def go(self):
         if self.action == "create":

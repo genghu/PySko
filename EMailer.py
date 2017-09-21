@@ -9,8 +9,10 @@ from ATLiteExceptions import *
 
 class EMailer(tornado.web.RequestHandler):
     def initialize(self):
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.atlitepy
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.atlitepy
+	self.client = MongoClient()
+	self.db = client.atlitepy
         self.required_properties = ['userGuid', 'message', 'subject', 'to_addrs']
 
     def get(self):

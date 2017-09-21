@@ -4,6 +4,8 @@ import re
 
 import pymongo
 
+from pymongo import MongoClient
+
 import WorkerBee
 
 class Base():
@@ -42,8 +44,11 @@ class Base():
         self.notes = notes
         self.rankby = rankby
 
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.dsspp
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.dsspp
+
+	self.client = MongoClient()
+	self.db = client.dsspp
 
     def getText(self):
         remove_non_alphanum = re.compile('[^A-Za-z0-9\\s]+')

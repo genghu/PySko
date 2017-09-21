@@ -1,4 +1,5 @@
 import pymongo
+from pymongo import MongoClient
 
 import datetime
 import urllib
@@ -14,8 +15,10 @@ class RetrieveAccount:
         self.timestamp  = timestamp
         self.profileID   = profileID#"HELLO PROFILE"
         self.show_all = show_all
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.atlitepy
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.atlitepy
+	self.client = MongoClient()
+	self.db = client.atlitepy
 
     def go(self):
         if self.action == "create":

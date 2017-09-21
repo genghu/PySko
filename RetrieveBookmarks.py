@@ -3,6 +3,7 @@ import tornado.web
 import urllib
 
 import pymongo
+from pymongo import MongoClient
 
 import json
 import datetime
@@ -13,8 +14,10 @@ from ATLiteExceptions import *
 
 class RetrieveBookmarks(tornado.web.RequestHandler):
 	def initialize(self):
-		self.connection = pymongo.connection.Connection()
-		self.db = self.connection.atlitepy
+		#self.connection = pymongo.connection.Connection()
+		#self.db = self.connection.atlitepy
+		self.client = MongoClient()
+		self.db = client.atlitepy
 
 	def get(self):
 		json_str = self.get_argument('json', None)

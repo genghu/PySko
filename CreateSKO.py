@@ -6,6 +6,7 @@ import datetime
 import urllib
 
 import pymongo
+from pymongo import MongoClient
 
 from ATLiteExceptions import *
 
@@ -13,8 +14,10 @@ from PermissionManager import PermissionManager
 
 class CreateSKO(tornado.web.RequestHandler):
     def initialize(self):
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.atlitepy
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.atlitepy
+	self.client = MongoClient()
+	self.db = client.atlitepy
         self.mostRecentGuid = ''
         self.pm = PermissionManager()
 

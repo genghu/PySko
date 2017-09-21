@@ -3,6 +3,8 @@ import tornado.escape
 
 import pymongo
 
+from pymongo import MongoClient
+
 import Base
 
 from ATLiteExceptions import *
@@ -11,8 +13,10 @@ class BaseWrapper(tornado.web.RequestHandler):
     def initialize(self):
         self.json = None
 
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.atlitepy
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.atlitepy
+	self.client = MongoClient()
+	self.db = client.atlitepy
 
     def get(self):
         self.handle_request()

@@ -1,11 +1,14 @@
 import tornado.web
 import pymongo
+from pymongo import MongoClient
 
 class DomainList(tornado.web.RequestHandler):
     def initialize(self):
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.dsspp
-
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.dsspp
+	self.client = MongoClient()
+	self.db = client.dsspp
+	
     def get(self):
         rows = self.db.domain_list.find({}, sort=[("number", pymongo.ASCENDING)])
 

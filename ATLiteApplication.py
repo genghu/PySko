@@ -6,10 +6,11 @@ import base64
 
 import pymongo
 import pymongo.errors
+from pymongo import MongoClient
 
 import RootHandler
 import LoginHandler
-import GIFTLoginHandler
+#import GIFTLoginHandler
 import CreateSKO
 import RetrieveSKO
 import UpdateSKO
@@ -46,13 +47,16 @@ import SaveBookmark
 import RetrieveBookmarks
 #import MyScriptsServlet
 
-#import RedmineLoginHandler
+import RedmineLoginHandler
+
+global client
 
 class ATLiteApplication(tornado.web.Application):
     def __init__(self):
         try:
-            self.connection = pymongo.MongoClient("localhost",27017)
-	    #self.connection = pymongo.connection.Connection()
+            #self.connection = pymongo.connection.Connection()
+	    client = MongoClient()
+	    self.db = client.dsspp
         except pymongo.errors.AutoReconnect:
 #            self.logfile = open('C:/atlapp.log', 'a')
 #            print >> self.logfile, '*** atldsspp says: Error! Could not connect to MongoDB!'
@@ -90,6 +94,7 @@ class ATLiteApplication(tornado.web.Application):
             (r"/ssasd", SSASD.SSASD),
             (r"/getaccount", RetrieveGUID.RetrieveGuid),
             (r"/googleLogin", LoginHandler.LoginHandler),
+            (r"/realLogin", LoginHandler.LoginHandler),
             #(r"/realLogin", GIFTLoginHandler.LoginHandler),
             #(r"/redmineLogin", GIFTLoginHandler.LoginHandler),
             (r"/oauth2callback", LoginHandler.LoginHandler),
@@ -103,9 +108,9 @@ class ATLiteApplication(tornado.web.Application):
             (r"/savebookmark", SaveBookmark.SaveBookmark),
             (r"/retrievebookmark", RetrieveBookmarks.RetrieveBookmarks),
 		
-            #(r"/redmineLogin2", RedmineLoginHandler.Main),
+            (r"/redmineLogin2", RedmineLoginHandler.Main),
            # (r"/realLogin", RedmineLoginHandler.Main),
-            #(r"/redmineCallback", RedmineLoginHandler.Callback)
+            (r"/redmineCallback", RedmineLoginHandler.Callback)
 
 
         ];

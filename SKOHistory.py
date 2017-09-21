@@ -8,8 +8,10 @@ import json
 
 class SKOHistory(tornado.web.RequestHandler):
     def initialize(self):
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.atlitepy
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.atlitepy
+	self.client = MongoClient()
+	self.db = client.atlitepy
 
     def get(self):
         skoGuid = self.get_argument('sko_id', None)

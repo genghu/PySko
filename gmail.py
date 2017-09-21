@@ -4,6 +4,7 @@ import uuid
 import datetime
 
 import pymongo
+from pymongo import MongoClient
 
 GMAIL_USERNAME = 'SKOHuest'
 GMAIL_PASSWORD = 'um-its-center'
@@ -17,8 +18,10 @@ class GMailPy():
         self.subject = ''
         self.message = ''
 
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.atlitepy
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.atlitepy
+	self.client = MongoClient()
+	self.db = client.atlitepy
 
     def add_to_addr(self, toaddr):
         self.toaddrs.append(toaddr)

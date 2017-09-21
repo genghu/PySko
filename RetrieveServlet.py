@@ -3,6 +3,7 @@ import tornado.escape
 import re
 
 import pymongo
+from pymongo import MongoClient
 
 from PermissionManager import PermissionManager
 
@@ -13,8 +14,10 @@ import urllib
 class RetrieveServlet(tornado.web.RequestHandler):
     def initialize(self):
         self.pm = PermissionManager()
-        self.connection = pymongo.connection.Connection()
-        self.db = self.connection.atlitepy
+        #self.connection = pymongo.connection.Connection()
+        #self.db = self.connection.atlitepy
+	self.client = MongoClient()
+	self.db = client.atlitepy
 
     #@tornado.web.authenticated
     def get(self):
